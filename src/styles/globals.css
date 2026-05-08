@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-ink-950 text-slate-100 font-sans antialiased;
+    background-image:
+      radial-gradient(at 20% 0%, rgba(124, 58, 237, 0.18) 0, transparent 55%),
+      radial-gradient(at 80% 100%, rgba(67, 56, 202, 0.18) 0, transparent 55%),
+      linear-gradient(180deg, #0b0a1a 0%, #0b0a1a 100%);
+    background-attachment: fixed;
+  }
+  /* KaTeX scale-down for tight cells */
+  .cell-katex .katex {
+    font-size: 0.95rem;
+  }
+  .out-katex .katex {
+    font-size: 1.05rem;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors;
+    @apply bg-ink-800 text-slate-100 hover:bg-ink-700 border border-white/10;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold transition-all;
+    background: linear-gradient(135deg, #4338ca 0%, #7c3aed 100%);
+    @apply text-white shadow-glow hover:brightness-110 active:brightness-95;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-md px-2.5 py-1.5 text-sm transition-colors;
+    @apply text-slate-300 hover:bg-white/5;
+  }
+  .panel {
+    @apply rounded-xl border border-white/10 bg-ink-900/70 backdrop-blur-sm;
+  }
+  .tab {
+    @apply rounded-md px-3 py-1.5 text-sm transition-colors text-slate-300;
+  }
+  .tab-active {
+    @apply bg-white/10 text-white;
+  }
+  .key {
+    @apply select-none cursor-pointer rounded-md border border-white/10 bg-ink-800/80 px-2.5 py-2 text-center text-sm hover:bg-ink-700 active:scale-95 transition;
+    min-width: 2.25rem;
+  }
+  .key-wide {
+    @apply key;
+    min-width: 4rem;
+  }
+  .key-cmd {
+    @apply key text-brand-400;
+  }
+}
+
+/* Subtle scrollbar */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

@@ -1,0 +1,25 @@
+# node
+node_modules/
+dist/
+*.log
+.npm/
+.eslintcache
+
+# tauri / rust
+src-tauri/target/
+src-tauri/gen/
+src-tauri/Cargo.lock
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# build artifacts
+*.tsbuildinfo
