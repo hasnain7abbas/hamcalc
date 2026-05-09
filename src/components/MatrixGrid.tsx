@@ -14,20 +14,20 @@ export function MatrixGrid() {
   const setCursor = useStore((s) => s.setCursor);
 
   return (
-    <div className="panel p-6 overflow-auto">
+    <div className="panel p-3 sm:p-6 overflow-auto">
       <div className="flex items-center gap-2 mb-3 text-xs uppercase tracking-wide text-slate-400">
         <span className="text-brand-400">{rows}×{cols}</span>
         <span>matrix</span>
       </div>
 
-      <div className="flex items-stretch">
+      <div className="flex items-stretch min-w-min">
         {/* Left bracket */}
-        <div className="w-3 border-l-2 border-y-2 border-slate-300/80 rounded-l-md mr-2" />
+        <div className="w-2 sm:w-3 border-l-2 border-y-2 border-slate-300/80 rounded-l-md mr-1.5 sm:mr-2 flex-shrink-0" />
 
         <div
-          className="grid gap-2"
+          className="grid gap-1.5 sm:gap-2"
           style={{
-            gridTemplateColumns: `repeat(${cols}, minmax(8rem, 1fr))`,
+            gridTemplateColumns: `repeat(${cols}, minmax(6rem, 1fr))`,
           }}
         >
           {Array.from({ length: rows }).map((_, i) =>
@@ -46,7 +46,7 @@ export function MatrixGrid() {
         </div>
 
         {/* Right bracket */}
-        <div className="w-3 border-r-2 border-y-2 border-slate-300/80 rounded-r-md ml-2" />
+        <div className="w-2 sm:w-3 border-r-2 border-y-2 border-slate-300/80 rounded-r-md ml-1.5 sm:ml-2 flex-shrink-0" />
       </div>
     </div>
   );
@@ -122,8 +122,11 @@ function Cell({
         onKeyDown={onKey}
         spellCheck={false}
         autoComplete="off"
+        inputMode="text"
+        autoCapitalize="off"
+        autoCorrect="off"
         className={[
-          "w-full rounded-md px-2 py-2 text-sm font-mono bg-ink-800/70 border focus:outline-none transition-colors",
+          "w-full rounded-md px-2 py-2 text-base sm:text-sm font-mono bg-ink-800/70 border focus:outline-none transition-colors",
           status === "ok"
             ? "border-emerald-500/30 focus:border-emerald-400"
             : status === "err"

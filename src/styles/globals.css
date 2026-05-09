@@ -6,7 +6,11 @@
   html,
   body,
   #root {
-    height: 100%;
+    min-height: 100%;
+  }
+  html {
+    /* Disable Safari font auto-scaling on landscape rotation */
+    -webkit-text-size-adjust: 100%;
   }
   body {
     @apply bg-ink-950 text-slate-100 font-sans antialiased;
@@ -15,6 +19,25 @@
       radial-gradient(at 80% 100%, rgba(67, 56, 202, 0.18) 0, transparent 55%),
       linear-gradient(180deg, #0b0a1a 0%, #0b0a1a 100%);
     background-attachment: fixed;
+    /* Honor iOS notch / Android display cutout */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  /* iOS auto-zooms inputs whose font-size < 16px. Force >=16px on phones, then
+     scale down visually so the existing layout still looks dense on desktop. */
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 16px;
+  }
+  @media (min-width: 768px) {
+    input,
+    textarea,
+    select,
+    button {
+      font-size: inherit;
+    }
   }
   /* KaTeX scale-down for tight cells */
   .cell-katex .katex {
@@ -50,7 +73,9 @@
   }
   .key {
     @apply select-none cursor-pointer rounded-md border border-white/10 bg-ink-800/80 px-2.5 py-2 text-center text-sm hover:bg-ink-700 active:scale-95 transition;
-    min-width: 2.25rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    touch-action: manipulation;
   }
   .key-wide {
     @apply key;
