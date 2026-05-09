@@ -54,7 +54,14 @@ export function OutputPanel() {
       {result?.ok && (
         <div className="flex-1 overflow-auto out-katex space-y-4">
           {result.matrixLatex && tab === "Spectrum" && (
-            <Section label="Input matrix">
+            <Section
+              label="Input matrix"
+              definition={
+                <span>
+                  Hamiltonian operator <DefTex>{"H"}</DefTex>
+                </span>
+              }
+            >
               <Tex display>{result.matrixLatex}</Tex>
             </Section>
           )}
@@ -82,27 +89,47 @@ export function OutputPanel() {
 
 function Section({
   label,
+  definition,
   children,
 }: {
   label: string;
+  definition?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div>
-      <div className="text-xs uppercase tracking-wide text-slate-400 mb-1">
-        {label}
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+        <div className="text-xs uppercase tracking-wide text-slate-400">
+          {label}
+        </div>
+        {definition && (
+          <div className="text-[11px] text-slate-500">{definition}</div>
+        )}
       </div>
-      <div className="rounded-md border border-white/5 bg-ink-850/40 p-3 overflow-x-auto">
+      <div className="rounded-xl border border-white/5 bg-white/[0.03] p-3 overflow-x-auto backdrop-blur-md">
         {children}
       </div>
     </div>
   );
 }
 
+function DefTex({ children }: { children: string }) {
+  return (
+    <span className="inline-block align-baseline">
+      <Tex>{children}</Tex>
+    </span>
+  );
+}
+
 function SpectrumTab({ r }: { r: SolveResult }) {
+  const definition = (
+    <>
+      Solutions of <DefTex>{"H\\,|\\psi\\rangle = \\lambda\\,|\\psi\\rangle"}</DefTex>
+    </>
+  );
   if (!r.eigenvalues || r.eigenvalues.length === 0) {
     return (
-      <Section label="Eigenvalues">
+      <Section label="Eigenvalues" definition={definition}>
         <div className="text-sm text-slate-500">
           Eigenvalues unavailable for this matrix
           {r.symbolic ? " — symbolic eigen-decomposition only supported for n=2 in this build." : "."}
@@ -110,12 +137,22 @@ function SpectrumTab({ r }: { r: SolveResult }) {
       </Section>
     );
   }
+  // Symbolic 2×2 uses λ₊, λ₋ labels; everything else uses λ_k.
+  const labelFor = (k: number) => {
+    if (r.symbolic && r.eigenvalues!.length === 2) {
+      return k === 0 ? "\\lambda_{+}" : "\\lambda_{-}";
+    }
+    return `\\lambda_{${k + 1}}`;
+  };
   return (
-    <Section label="Eigenvalues">
-      <div className="space-y-2">
+    <Section label="Eigenvalues" definition={definition}>
+      <div className="space-y-3">
         {r.eigenvalues.map((ev, k) => (
-          <div key={k} className="flex items-baseline gap-2">
-            <span className="text-slate-400 text-sm font-mono">λ_{k + 1} =</span>
+          <div
+            key={k}
+            className="flex items-baseline flex-wrap gap-x-2 gap-y-1"
+          >
+            <Tex>{`${labelFor(k)} \\;=\\;`}</Tex>
             <Tex>{ev.latex}</Tex>
           </div>
         ))}
@@ -125,9 +162,15 @@ function SpectrumTab({ r }: { r: SolveResult }) {
 }
 
 function EigenvectorsTab({ r }: { r: SolveResult }) {
+  const definition = (
+    <>
+      Vectors satisfying{" "}
+      <DefTex>{"H\\,|\\psi_k\\rangle = \\lambda_k\\,|\\psi_k\\rangle"}</DefTex>
+    </>
+  );
   if (!r.eigenvectors || r.eigenvectors.length === 0) {
     return (
-      <Section label="Eigenvectors">
+      <Section label="Eigenvectors" definition={definition}>
         <div className="text-sm text-slate-500">
           Eigenvectors require numeric values for all symbols.
         </div>
@@ -135,14 +178,14 @@ function EigenvectorsTab({ r }: { r: SolveResult }) {
     );
   }
   return (
-    <Section label="Eigenvectors">
-      <div className="space-y-3">
+    <Section label="Eigenvectors" definition={definition}>
+      <div className="space-y-4">
         {r.eigenvectors.map((ev, k) => (
           <div key={k}>
-            <div className="text-xs text-slate-400 mb-1">
+            <div className="text-sm text-slate-300 mb-1">
               <Tex>{ev.eigenvalueLatex}</Tex>
             </div>
-            <Tex display>{ev.vectorLatex}</Tex>
+            <Tex display>{`|\\psi_{${k + 1}}\\rangle = ${ev.vectorLatex}`}</Tex>
           </div>
         ))}
       </div>
@@ -153,15 +196,37 @@ function EigenvectorsTab({ r }: { r: SolveResult }) {
 function PropertiesTab({ r }: { r: SolveResult }) {
   return (
     <div className="space-y-3">
-      <Section label="Trace">
+      <Section
+        label="Trace"
+        definition={
+          <>
+            <DefTex>{"\\operatorname{tr}(H) = \\sum_i H_{ii}"}</DefTex>
+          </>
+        }
+      >
         <Tex display>{r.trace.latex}</Tex>
       </Section>
       {r.determinant && (
-        <Section label="Determinant">
+        <Section
+          label="Determinant"
+          definition={<DefTex>{"\\det(H) = \\prod_k \\lambda_k"}</DefTex>}
+        >
           <Tex display>{r.determinant.latex}</Tex>
         </Section>
       )}
-      <Section label="Predicates">
+      <Section
+        label="Predicates"
+        definition={
+          <span>
+            Hermitian:{" "}
+            <DefTex>{"H = H^{\\dagger}"}</DefTex>
+            {"  ·  "}
+            Unitary: <DefTex>{"H^{\\dagger}H = I"}</DefTex>
+            {"  ·  "}
+            Positive-definite: <DefTex>{"\\lambda_k > 0\\;\\forall k"}</DefTex>
+          </span>
+        }
+      >
         <div className="grid grid-cols-2 gap-2 text-sm">
           <Pred label="Hermitian" value={r.hermitian} />
           <Pred label="Unitary" value={r.unitary} />
@@ -198,9 +263,12 @@ function Pred({ label, value }: { label: string; value: boolean | undefined }) {
 }
 
 function CharPolyTab({ r }: { r: SolveResult }) {
+  const definition = (
+    <DefTex>{"p(\\lambda) = \\det(\\lambda I - H)"}</DefTex>
+  );
   if (!r.charPolyLatex) {
     return (
-      <Section label="Characteristic polynomial">
+      <Section label="Characteristic polynomial" definition={definition}>
         <div className="text-sm text-slate-500">
           Skipped — matrix too large or symbolic engine declined.
         </div>
@@ -208,30 +276,36 @@ function CharPolyTab({ r }: { r: SolveResult }) {
     );
   }
   return (
-    <Section label="Characteristic polynomial">
+    <Section label="Characteristic polynomial" definition={definition}>
       <Tex display>{r.charPolyLatex}</Tex>
       <div className="mt-2 text-xs text-slate-500">
-        p(λ) = det(λI − H). Roots of p are the eigenvalues.
+        Roots of <Tex>{"p(\\lambda)"}</Tex> are the eigenvalues of{" "}
+        <Tex>{"H"}</Tex>.
       </div>
     </Section>
   );
 }
 
 function EvolutionTab({ r }: { r: SolveResult }) {
+  const definition = (
+    <DefTex>{"U(t) = \\exp\\!\\left(-\\tfrac{i\\,H\\,t}{\\hbar}\\right)"}</DefTex>
+  );
   if (!r.evolutionLatex) {
     return (
-      <Section label="Time evolution">
+      <Section label="Time evolution" definition={definition}>
         <div className="text-sm text-slate-500">
-          U(t) = exp(−iHt/ℏ). Bind all symbols to numeric values to compute.
+          Bind all symbols to numeric values above to compute the unitary{" "}
+          <Tex>{"U(t)"}</Tex>.
         </div>
       </Section>
     );
   }
   return (
-    <Section label="Time evolution">
+    <Section label="Time evolution" definition={definition}>
       <Tex display>{r.evolutionLatex}</Tex>
       <div className="mt-2 text-xs text-slate-500">
-        Shown at t = ℏ = 1. Substitute parameters above to vary t.
+        Shown at <Tex>{"t = \\hbar = 1"}</Tex>. Substitute parameters above to
+        vary <Tex>{"t"}</Tex>.
       </div>
     </Section>
   );
@@ -254,13 +328,20 @@ function NumericTab({ r }: { r: SolveResult }) {
   const max = Math.max(...evs.map((x) => Math.abs(x)), 1);
   return (
     <div className="space-y-3">
-      <Section label="Spectrum (real part)">
-        <div className="space-y-1">
+      <Section
+        label="Spectrum (real part)"
+        definition={
+          <DefTex>{"\\operatorname{Re}(\\lambda_k)"}</DefTex>
+        }
+      >
+        <div className="space-y-1.5">
           {evs.map((v, k) => (
             <div key={k} className="flex items-center gap-2 text-xs font-mono">
-              <span className="w-12 text-slate-400">λ_{k + 1}</span>
-              <span className="w-20 text-right">{v.toFixed(4)}</span>
-              <div className="flex-1 h-2 bg-ink-800 rounded">
+              <span className="w-10 sm:w-12 text-slate-400">
+                <Tex>{`\\lambda_{${k + 1}}`}</Tex>
+              </span>
+              <span className="w-16 sm:w-20 text-right">{v.toFixed(4)}</span>
+              <div className="flex-1 h-2 bg-white/5 rounded">
                 <div
                   className="h-full rounded"
                   style={{

@@ -126,15 +126,16 @@ function Cell({
         autoCapitalize="off"
         autoCorrect="off"
         className={[
-          "w-full rounded-md px-2 py-2 text-base sm:text-sm font-mono bg-ink-800/70 border focus:outline-none transition-colors",
+          "w-full rounded-lg px-2.5 py-2 text-base sm:text-sm font-mono bg-white/[0.04] backdrop-blur-md border focus:outline-none transition-colors",
           status === "ok"
-            ? "border-emerald-500/30 focus:border-emerald-400"
+            ? "border-emerald-400/40 focus:border-emerald-300"
             : status === "err"
-              ? "border-rose-500/40 focus:border-rose-400"
+              ? "border-rose-400/50 focus:border-rose-300"
               : "border-white/10 focus:border-brand-400",
-          active ? "ring-2 ring-brand-500/40" : "",
+          active ? "ring-2 ring-brand-400/50" : "",
         ].join(" ")}
-        placeholder={`H_{${i + 1}${j + 1}}`}
+        placeholder=""
+        aria-label={`row ${i + 1}, column ${j + 1}`}
       />
       <div className="mt-1 min-h-[1.5rem] px-1 text-slate-300 cell-katex">
         {parsed?.ok ? (

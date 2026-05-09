@@ -20,10 +20,14 @@ export function SizeModal() {
   ];
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="panel w-[440px] p-6">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-md p-4">
+      <div className="panel w-full max-w-[440px] p-5 sm:p-6">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="" className="h-9 w-9" />
+          <img
+            src={`${import.meta.env.BASE_URL}logo.svg`}
+            alt="HamCalc"
+            className="h-10 w-10 rounded-md"
+          />
           <div>
             <div className="font-semibold text-lg">HamCalc</div>
             <div className="text-xs text-slate-400">
@@ -41,7 +45,7 @@ export function SizeModal() {
               max={64}
               value={rows}
               onChange={(e) => setRows(Math.max(1, Math.min(64, Number(e.target.value) || 1)))}
-              className="w-full rounded-md border border-white/10 bg-ink-800 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full rounded-lg border border-white/10 bg-white/[0.05] backdrop-blur-md px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </label>
           <label className="text-sm">
@@ -52,7 +56,7 @@ export function SizeModal() {
               max={64}
               value={cols}
               onChange={(e) => setCols(Math.max(1, Math.min(64, Number(e.target.value) || 1)))}
-              className="w-full rounded-md border border-white/10 bg-ink-800 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full rounded-lg border border-white/10 bg-white/[0.05] backdrop-blur-md px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </label>
         </div>

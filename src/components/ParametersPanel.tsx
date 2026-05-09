@@ -17,27 +17,28 @@ export function ParametersPanel() {
 
   if (symbols.length === 0) {
     return (
-      <div className="panel p-4">
-        <div className="text-sm font-semibold text-slate-200 mb-2">
+      <div className="panel p-3 sm:p-4">
+        <div className="text-sm font-semibold text-slate-200 mb-1">
           Parameters
         </div>
         <div className="text-xs text-slate-500">
-          No free symbols detected. Enter symbols (ω, g, …) to bind values.
+          No free symbols detected. Enter symbols (ω, g, ℏ, …) in the matrix to
+          bind numeric values here.
         </div>
       </div>
     );
   }
 
   return (
-    <div className="panel p-4">
-      <div className="text-sm font-semibold text-slate-200 mb-2">
+    <div className="panel p-3 sm:p-4">
+      <div className="text-sm font-semibold text-slate-200 mb-1">
         Numeric values
       </div>
       <div className="text-xs text-slate-500 mb-3">
-        Bind values for any/all symbols to compute numeric eigenvalues, time
-        evolution, and properties.
+        Bind any/all symbols to compute numeric eigenvalues, eigenvectors, and{" "}
+        the time-evolution unitary <Tex>{"U(t)"}</Tex>.
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {symbols.map((sym) => (
           <div key={sym} className="flex items-center gap-2">
             <div className="w-12 text-right">
@@ -54,7 +55,7 @@ export function ParametersPanel() {
                 if (v === "") setSub(sym, null);
                 else setSub(sym, Number(v));
               }}
-              className="flex-1 rounded-md border border-white/10 bg-ink-800 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] backdrop-blur-md px-2 py-1.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
         ))}

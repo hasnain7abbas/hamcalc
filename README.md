@@ -13,7 +13,7 @@
 [![TypeScript][TS-image]][ts-url]
 [![License: MIT][License-image]](#-license)
 
-[**Live Web App**][web-url] / [**Windows Installer**][download-url] / [**Design Doc**](HAMCALC_DESIGN.md) / [**Roadmap**](#%EF%B8%8F-roadmap)
+[**🌐 Live Web App**][web-url] · [**💾 Windows Installer**][download-url] · [**📐 Design Doc**](HAMCALC_DESIGN.md) · [**🗺️ Roadmap**](#%EF%B8%8F-roadmap)
 
 [web-url]: https://hasnain7abbas.github.io/hamcalc/
 [download-url]: https://github.com/hasnain7abbas/hamcalc/releases
@@ -27,92 +27,150 @@
 [TS-image]: https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white
 [License-image]: https://img.shields.io/badge/License-MIT-blue.svg
 
+![HamCalc hero](docs/images/hero.png)
+
 </div>
 
 ## 📌 What is HamCalc?
 
 Most people who want to diagonalize a 2×2, 3×3, or 4×4 Hamiltonian today either fire up **Mathematica** (paid, heavy), wrestle a **SymPy** script and re-derive the LaTeX next week, or do it on paper and make sign errors.
 
-**HamCalc is the missing third option:** a single page where you spec the matrix size, type the entries with a physics keyboard (Greek letters, ℏ, π, dagger, Pauli matrices, sub/superscripts), press **Solve**, and get the spectrum back as rendered math.
+**HamCalc is the missing third option:** a single page where you spec the matrix size, type the entries with a physics-aware keyboard, press **Solve**, and get the spectrum back as rendered math.
 
 > No login. No setup. No Mathematica syntax to memorize. Works on your phone.
 
-## 📱 Use it on the web
+## 📱 Use it anywhere
 
-The full app is hosted on GitHub Pages — open it on a phone, tablet, or desktop:
+The full app is hosted on **GitHub Pages** — open it on a phone, tablet, or desktop:
 
 > **<https://hasnain7abbas.github.io/hamcalc/>**
 
+<table>
+<tr>
+<td width="50%"><img src="docs/images/mobile.png" alt="HamCalc on mobile" /></td>
+<td width="50%"><img src="docs/images/keyboard.png" alt="On-screen physics keyboard" /></td>
+</tr>
+<tr>
+<td align="center"><sub>Phone layout (vertical, sticky header)</sub></td>
+<td align="center"><sub>Six-tab Gboard-style physics keyboard</sub></td>
+</tr>
+</table>
+
 The interface is fully responsive:
-- The matrix scales down to phone screens, with a dedicated on-screen physics keyboard.
-- Inputs use a 16 px font on mobile to prevent iOS auto-zoom.
-- Tap targets are at least 40 × 40 px (Material/Apple HIG).
+
+- The matrix scales down to phone screens; brackets, gaps, and cell widths shrink with `sm:` breakpoints.
+- Inputs use 16 px font on mobile so iOS doesn't auto-zoom.
+- Tap targets are at least 40 × 40 px (Material / Apple HIG).
 - Layout respects iOS safe areas (notch / home indicator).
-- Works offline once loaded — calculations happen entirely in your browser.
+- Translucent panels with `backdrop-blur-xl` over a static gradient backdrop.
+- Works **offline** once loaded — calculations happen entirely in your browser.
 
 ## 🚀 Features
 
-- **Matrix sizing**: 2×2 through 6×6 symbolic, up to 64×64 numeric.
-- **Physics-aware keyboard** with six tabs: `Basic`, `Latin`, `Greek`, `Physics`, `Functions`, `Structure`.
-  Inserts proper unicode glyphs (α, β, ℏ, †, σₓ, ∇, ∫…) directly into cells.
-- **Hardware shortcut layer**: type `\alpha`, `\hbar`, `\dag` on a normal keyboard — they're rewritten in real time.
-- **Live LaTeX preview** under every cell, rendered with KaTeX.
-- **Solver outputs**:
-  - Spectrum (eigenvalues with multiplicities)
-  - Eigenvectors
-  - Properties: trace, determinant, rank, **Hermitian?**, **Unitary?**, **Positive-definite?**
-  - Characteristic polynomial via Faddeev–LeVerrier
-  - Time-evolution operator `U(t) = exp(-iHt/ℏ)`
-  - Numeric mode with bar plot of the spectrum
-- **Export**: copy/download as **LaTeX**, **Markdown**, **JSON**, or a standalone **Python (SymPy)** script that reproduces the calculation.
-- **Persists across sessions** via LocalStorage — your matrix is still there next time.
-- **Dark theme** styled around the logo's indigo→violet gradient.
-- **Ships as a native desktop app** (Windows `.msi` + `.exe`) via Tauri 2 — webview-based but a single ~5 MB binary, not a 200 MB Electron blob.
+| Capability | Detail |
+|------------|--------|
+| **Matrix sizing** | 2×2 through 6×6 symbolic, up to 64×64 numeric. |
+| **Physics keyboard** | Six tabs (`Basic`, `Latin`, `Greek`, `Physics`, `Functions`, `Structure`), Gboard-style rows. Inserts proper unicode glyphs (α, β, ℏ, †, σₓ, ∇, ∫…). |
+| **Hardware shortcuts** | Type `\alpha`, `\hbar`, `\dag` on a normal keyboard — rewritten in real time. |
+| **Live LaTeX preview** | Under every cell, rendered with KaTeX. |
+| **Symbolic eigenvalues** | Closed form for n = 2; characteristic polynomial via Faddeev–LeVerrier up to n = 5. |
+| **Numeric eigenvalues** | math.js `eigs` for full numeric spectrum + eigenvectors once symbols are bound. |
+| **Time evolution** | Numerical <img alt="U(t)" src="https://latex.codecogs.com/svg.latex?U(t)=e^{-iHt/\hbar}" />. |
+| **Properties** | Trace, determinant, rank, Hermitian, Unitary, Positive-definite. |
+| **Export** | LaTeX, Markdown, JSON, standalone Python (SymPy) script. |
+| **Persistence** | LocalStorage drafts — your matrix is still there next time. |
+| **Dark theme** | Indigo→violet gradient backdrop with translucent glass panels. |
+| **Native desktop** | Tauri 2 produces a single ~5 MB Windows binary, not a 200 MB Electron blob. |
 
-## 🖼️ The interface
+## 🧮 What HamCalc computes
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  Ĥ   HamCalc — Symbolic Hamiltonian Solver       [2×2 resize] [Solve ↵] │
-├──────────────────────────────────────┬──────────────────────────────────┤
-│                                      │  Spectrum  Eigenvectors  Props   │
-│   2×2 matrix                         │  Char Poly  U(t)  Numeric  Export│
-│                                      ├──────────────────────────────────┤
-│   ⎡  ℏω/2     g    ⎤                 │  Input matrix:                   │
-│   ⎢                ⎥                 │      ⎡ ℏω/2   g   ⎤              │
-│   ⎣   g    -ℏω/2   ⎦                 │  H = ⎣  g   -ℏω/2 ⎦              │
-│                                      │                                  │
-│   Numeric values:                    │  Eigenvalues:                    │
-│     ω = 1.0    g = 0.3               │    λ₊ = +½√(ℏ²ω² + 4g²)          │
-│     ℏ = 1.0                          │    λ₋ = -½√(ℏ²ω² + 4g²)          │
-│                                      │                                  │
-│  ┌─ Keyboard ────────────────────┐   │  ✓ Hermitian                     │
-│  │ Basic Latin Greek Physics ··· │   │                                  │
-│  │  ℏ  ℎ  c  e  kB  π  i  ∞      │   │                                  │
-│  │  †  *  ⊗  ∂  ∇                │   │                                  │
-│  │  σx σy σz σ₊ σ₋  𝟙           │   │                                  │
-│  └───────────────────────────────┘   │                                  │
-└──────────────────────────────────────┴──────────────────────────────────┘
-```
+For an input matrix Hamiltonian $H \in \mathbb{C}^{n \times n}$, HamCalc reports:
 
-## 🧮 Worked example — Rabi model
+### 1. Eigenvalues (Spectrum)
 
-Drop in the standard 2×2 Rabi Hamiltonian:
+Solutions of the eigenvalue equation
 
-| | col 1 | col 2 |
-|-|-------|-------|
-| **row 1** | `ℏω/2`  | `g`     |
-| **row 2** | `g`     | `−ℏω/2` |
+$$H\,|\psi_k\rangle = \lambda_k\,|\psi_k\rangle, \qquad k = 1, \dots, n.$$
+
+Symbolic for $n = 2$ (closed form via the quadratic formula); numeric for any $n$ once parameters are bound.
+
+![Spectrum tab](docs/images/output-spectrum.png)
+
+### 2. Eigenvectors
+
+The vectors $|\psi_k\rangle$ paired with each eigenvalue. HamCalc returns them normalized; degenerate subspaces are returned as one orthonormal basis.
+
+$$|\psi_k\rangle \in \mathbb{C}^{n}, \qquad \langle\psi_k|\psi_k\rangle = 1.$$
+
+![Eigenvectors tab](docs/images/output-eigenvectors.png)
+
+### 3. Properties
+
+| Property | Definition |
+|----------|------------|
+| Trace          | $\operatorname{tr}(H) = \sum_i H_{ii}$ |
+| Determinant    | $\det(H) = \prod_k \lambda_k$ |
+| Rank           | dimension of the column space |
+| Hermitian      | $H = H^{\dagger}$ |
+| Unitary        | $H^{\dagger} H = I$ |
+| Positive-definite | $\lambda_k > 0\;\;\forall k$ (Hermitian only) |
+
+![Properties tab](docs/images/output-properties.png)
+
+### 4. Characteristic polynomial
+
+$$p(\lambda) = \det(\lambda I - H).$$
+
+Computed with the [Faddeev–LeVerrier](https://en.wikipedia.org/wiki/Faddeev%E2%80%93LeVerrier_algorithm) algorithm, which falls out trace, determinant, and all coefficients in a single $O(n^4)$ pass.
+
+![Char Poly tab](docs/images/output-charpoly.png)
+
+### 5. Time-evolution unitary
+
+$$U(t) = \exp\!\left(-\tfrac{i\,H\,t}{\hbar}\right).$$
+
+Computed numerically by matrix exponentiation once all symbols are bound. Default plot is at $t = \hbar = 1$.
+
+![U(t) tab](docs/images/output-evolution.png)
+
+### 6. Export
+
+Copy or download the entire calculation as **LaTeX**, **Markdown**, **JSON**, or a standalone **Python (SymPy)** script that reproduces it byte-for-byte.
+
+## 🧪 Worked example — Rabi model
+
+Drop in the standard 2×2 Rabi Hamiltonian
+
+$$H_{\text{Rabi}} = \begin{pmatrix} \hbar\omega/2 & g \\\\ g & -\hbar\omega/2 \end{pmatrix}.$$
 
 Press **Solve** (or `Ctrl+Enter`). HamCalc returns:
 
-- **Eigenvalues:**  λ± = ±½ √(ℏ²ω² + 4g²)
-- **Eigenvectors:**  standard Rabi mixing-angle form
-- **Hermitian:** ✓ yes
-- **Char poly:**  `p(λ) = λ² − (ℏω·g)/4 …`  *(actual symbolic polynomial)*
-- **U(t):**  with ω=1, g=0.3, ℏ=1 → numeric 2×2 unitary
+| Quantity | Value |
+|----------|-------|
+| Eigenvalues       | $\lambda_{\pm} = \pm \tfrac{1}{2}\sqrt{\hbar^2\omega^2 + 4g^2}$ |
+| Eigenvectors      | Standard Rabi mixing-angle form, $\theta = \tfrac{1}{2}\arctan(2g/\hbar\omega)$ |
+| Trace             | $0$ |
+| Determinant       | $-\tfrac{\hbar^2\omega^2}{4} - g^2$ |
+| Hermitian         | ✓ |
+| Char. polynomial  | $p(\lambda) = \lambda^2 - \tfrac{\hbar^2\omega^2}{4} - g^2$ |
+| $U(t)$ at $\omega=1, g=0.3, \hbar=1$ | numeric 2×2 unitary |
 
 This is the regression test enshrined in §11 of [`HAMCALC_DESIGN.md`](HAMCALC_DESIGN.md).
+
+## 🎛️ The size picker
+
+On first launch HamCalc asks for the matrix shape. Pick a custom $r \times c$ or grab a preset:
+
+![Size modal](docs/images/size-modal.png)
+
+| Preset | Use case                              |
+|--------|---------------------------------------|
+| 2×2    | Two-level system / Rabi / qubit       |
+| 3×3    | Spin-1 / three-level $\Lambda$, V, $\Xi$ |
+| 4×4    | Two qubits / 4-level                  |
+| 6×6    | Maximum reliable size for symbolic    |
+
+Symbolic eigenvalues are guaranteed only for $n \le 4$ (Cardano / Ferrari). For $n = 5, 6$ HamCalc falls back to the characteristic polynomial; for $n \ge 7$ numeric mode only.
 
 ## 🏁 Get started
 
@@ -129,7 +187,7 @@ Pre-built installers are attached to each [GitHub release](https://github.com/ha
 | `HamCalc_x64-setup.exe` | NSIS installer | One-click `.exe` installer |
 | `HamCalc_x64_en-US.msi` | MSI installer  | Enterprise-friendly Windows Installer |
 
-Double-click either file. The app appears as **HamCalc** in the start menu with the gradient `Ĥ` icon.
+Double-click either file. The app appears as **HamCalc** in the start menu with the gradient $\hat H$ icon.
 
 ### Build from source
 
@@ -153,29 +211,28 @@ npm run tauri build     # → src-tauri/target/release/bundle/{nsis,msi}/
 
 ## 🌐 Deployment
 
-The web build is automatically published to **GitHub Pages** by [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) on every push to `main`.
-
-To deploy a fork to your own Pages site:
+The web build is published to **GitHub Pages** by [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) on every push to `main`. To deploy a fork to your own Pages site:
 
 1. Fork the repo.
-2. **Settings → Pages → Build and deployment → Source:** GitHub Actions.
-3. Push to `main`. The workflow runs `npm ci && npm run build` (with `GITHUB_PAGES=true` so Vite emits the right `base`) and uploads `dist/` to Pages.
-4. The site goes live at `https://<your-user>.github.io/hamcalc/`.
+2. Push to `main`. The workflow auto-enables Pages and deploys `dist/`.
+3. The site goes live at `https://<your-user>.github.io/hamcalc/`.
 
-If you publish under a different repo name, change the `base` value in [`vite.config.ts`](vite.config.ts).
+If your fork uses a different repo name, update `base` in [`vite.config.ts`](vite.config.ts).
 
 ## ⌨️ Keyboard cheatsheet
 
-| Hardware | Inserts | Hardware | Inserts |
-|----------|---------|----------|---------|
-| `\alpha` | α | `\hbar` | ℏ |
-| `\beta`  | β | `\dag` / `\dagger` | † |
-| `\gamma` | γ | `\infty` | ∞ |
-| `\theta` | θ | `\sqrt` | √ |
-| `\lambda`| λ | `\cdot` | · |
-| `\omega` | ω | `\Omega` | Ω |
-| `^`      | superscript box | `_` | subscript box |
-| `Ctrl+Enter` | Solve | `Tab` / `Shift+Tab` | next / prev cell |
+Hardware keyboard shortcuts:
+
+| Keystroke | Inserts | Keystroke | Inserts |
+|-----------|---------|-----------|---------|
+| `\alpha`  | α       | `\hbar`   | ℏ       |
+| `\beta`   | β       | `\dag` / `\dagger` | †  |
+| `\gamma`  | γ       | `\infty`  | ∞       |
+| `\theta`  | θ       | `\sqrt`   | √       |
+| `\lambda` | λ       | `\cdot`   | ·       |
+| `\omega`  | ω       | `\Omega`  | Ω       |
+| `^`       | superscript box | `_` | subscript box |
+| `Ctrl+Enter` | **Solve** | `Tab` / `Shift+Tab` | next / prev cell |
 
 Or just tap the on-screen keyboard.
 
@@ -185,17 +242,18 @@ Or just tap the on-screen keyboard.
 hamcalc/
 ├── HAMCALC_DESIGN.md              # Full design doc
 ├── logo.svg                       # Source logo — feeds web favicon and Tauri icons
-├── index.html                     # Vite entry, mobile meta tags, PWA hints
+├── index.html                     # Vite entry, mobile + PWA meta
 ├── vite.config.ts                 # base = "/hamcalc/" when GITHUB_PAGES=true
 ├── public/                        # Vite static assets
+├── docs/images/                   # Screenshots used by this README
 ├── src/                           # React + TypeScript front-end
-│   ├── App.tsx                    # Header (sticky), responsive layout, Ctrl+Enter
+│   ├── App.tsx                    # Sticky compact header, responsive layout
 │   ├── components/
-│   │   ├── SizeModal.tsx          # First-load size picker
+│   │   ├── SizeModal.tsx          # Translucent first-load size picker
 │   │   ├── MatrixGrid.tsx         # Cells with live KaTeX preview & status colors
-│   │   ├── Keyboard.tsx           # 6-tab on-screen physics keyboard
+│   │   ├── Keyboard.tsx           # 6-tab Gboard-style physics keyboard
 │   │   ├── ParametersPanel.tsx    # Bind numeric values to free symbols
-│   │   ├── OutputPanel.tsx        # 7-tab result viewer
+│   │   ├── OutputPanel.tsx        # 7-tab result viewer with definitions
 │   │   └── Tex.tsx                # KaTeX wrapper
 │   ├── lib/
 │   │   ├── parser/                # unicode → ASCII, math.js wrapper
@@ -203,7 +261,7 @@ hamcalc/
 │   │   ├── solver/solver.ts       # Faddeev–LeVerrier, 2×2 closed form, U(t)
 │   │   ├── shortcuts.ts           # \alpha → α rewriter
 │   │   └── store.ts               # Zustand + LocalStorage persist
-│   └── styles/globals.css         # Tailwind + safe-area + mobile zoom guards
+│   └── styles/globals.css         # Tailwind + safe-area + iOS zoom guards
 ├── src-tauri/                     # Rust + Tauri 2 shell (desktop only)
 └── .github/workflows/deploy.yml   # Web → GitHub Pages
 ```
@@ -212,10 +270,11 @@ hamcalc/
 
 1. **Cell text** → unicode normalized (ℏ → `hbar`, π → `pi`, σ_x → `sigma_x`); implicit-multiplication asterisks inserted where unambiguous (`2ω` → `2*omega`).
 2. **math.js** parses each cell into a `MathNode` AST.
-3. **Faddeev–LeVerrier** runs symbolically over the AST grid to produce characteristic-polynomial coefficients up to 5×5. Trace and determinant fall out for free.
-4. For **n = 2** we additionally produce a closed-form symbolic eigenvalue expression: λ = ½tr ± √((½diag-diff)² + bc).
-5. If the user has bound numeric values for every free symbol, the matrix is evaluated to numbers and we run `mathjs.eigs` for full numeric spectrum + eigenvectors, then `expm(-iH)` for the time-evolution operator.
-6. Render every result through KaTeX, with Greek and physics symbols mapped to the right LaTeX commands.
+3. **Faddeev–LeVerrier** runs symbolically over the AST grid to produce all coefficients of $p(\lambda) = \det(\lambda I - H)$ for $n \le 5$. Trace and determinant fall out for free.
+4. For $n = 2$ we additionally produce a closed-form symbolic eigenvalue:
+   $$\lambda_{\pm} = \tfrac{1}{2}(a + d) \pm \sqrt{\bigl(\tfrac{a-d}{2}\bigr)^2 + bc}.$$
+5. If the user has bound numeric values for every free symbol, the matrix is evaluated to numbers and we run `mathjs.eigs` for full numeric spectrum + eigenvectors, then `expm(-iH)` for $U(t)$.
+6. Every result renders through KaTeX with Greek and physics symbols mapped to the right LaTeX commands.
 
 ### Why Tauri (and not Electron / Mathematica / a webapp)
 
@@ -225,20 +284,21 @@ hamcalc/
 | Cold start   | <0.5 s          | 2–4 s               | 10+ s       |
 | Works offline| ✓               | ✓                   | ✓           |
 | Mobile (web) | ✓               | ✗                   | ✗           |
-| Free         | ✓               | ✓                   | ✗ ($350+/yr)|
+| Free         | ✓               | ✓                   | ✗ ($350+/yr) |
 
 ## 🗺️ Roadmap
 
 - [x] **v0.1 — MVP**: 2×2 / 3×3 / 4×4 symbolic, full keyboard, eigenvalues + eigenvectors, KaTeX output, NSIS + MSI bundle, web build on GitHub Pages.
+- [x] **v0.1.1 — Polish**: Translucent glass UI, Gboard-style keyboard, mobile optimizations, math definitions in every output tab.
 - [ ] **v0.2 — Useful**: Up to 6×6 symbolic via SymPy/Pyodide, full export pipeline, light theme.
-- [ ] **v0.3 — Sticky**: Hamiltonian zoo (Pauli, Gell-Mann, Jaynes-Cummings, Hubbard…), shareable URLs.
-- [ ] **v1.0 — Public launch**: Tensor-product builder `H = H₁ ⊗ I + I ⊗ H₂`, "Explain this step" panel.
+- [ ] **v0.3 — Sticky**: Hamiltonian zoo (Pauli, Gell-Mann, Jaynes–Cummings, Hubbard, …), shareable URLs.
+- [ ] **v1.0 — Public launch**: Tensor-product builder $H = H_1 \otimes I + I \otimes H_2$, "Explain this step" panel.
 
 See [`HAMCALC_DESIGN.md`](HAMCALC_DESIGN.md) for the full design document.
 
 ## 🤝 Contributing
 
-PRs welcome. The parser has the most room for sharper UX (better error messages, clearer ambiguous-multiplication warnings); the solver could grow a Pyodide+SymPy fallback for n > 4 symbolic eigenvalues.
+PRs welcome. The parser has the most room for sharper UX (better error messages, clearer ambiguous-multiplication warnings); the solver could grow a Pyodide+SymPy fallback for $n > 4$ symbolic eigenvalues.
 
 ```bash
 npm run dev                 # web dev server
@@ -256,11 +316,14 @@ Yes. Everything runs in the browser; no matrix or numeric value ever leaves your
 **Will it work offline?**
 After the first load, the web app is cached and works offline. The desktop build never needs the network.
 
-**Why is symbolic eigen-decomposition limited to n = 2?**
-Closed-form roots only exist up to n = 4 (Cardano / Ferrari) and even those are unwieldy. v0.2 will ship a Pyodide+SymPy path for full symbolic eigenvalues up to 6×6.
+**Why is symbolic eigen-decomposition limited to $n = 2$?**
+Closed-form roots only exist up to $n = 4$ (Cardano / Ferrari) and are unwieldy for $n = 3, 4$. v0.2 will ship a Pyodide+SymPy path for full symbolic eigenvalues up to 6×6.
 
-**Why doesn't the iOS keyboard zoom my matrix when I tap a cell?**
-We force a 16 px input font on mobile, which is the iOS threshold for disabling auto-zoom. Desktop layouts revert to the denser font size.
+**Why doesn't iOS auto-zoom my matrix when I tap a cell?**
+We force a 16 px input font on mobile, the iOS threshold for disabling auto-zoom. Desktop layouts revert to denser font sizes.
+
+**The screenshots above are missing — what's going on?**
+The repo ships a [`docs/images/`](docs/images/) directory with the expected filenames. Drop in your own screenshots (or wait for the maintainer to add them) and the README renders correctly.
 
 ## 📜 License
 
