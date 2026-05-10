@@ -58,7 +58,7 @@ export function symbolToLatex(name: string): string {
 
 export function nodeToLatex(node: MathNode): string {
   // mathjs has its own toTex with a custom handler for symbol replacement.
-  return node.toTex({
+  const raw = node.toTex({
     parenthesis: "auto",
     implicit: "show",
     handler: (n: any) => {
@@ -69,6 +69,16 @@ export function nodeToLatex(node: MathNode): string {
       return undefined as unknown as string;
     },
   });
+  return sanitizeLatex(raw);
+}
+
+// mathjs joins multiplication as `${a}\cdot${b}` with no separator. When `b`
+// starts with a letter (e.g. `h`, `x`), KaTeX's lexer greedily reads letters
+// after a backslash and turns `\cdoth` into one unknown command, which renders
+// as red error text. Insert a space after `\cdot` (and other commands likely to
+// be emitted by mathjs) when followed by a letter.
+function sanitizeLatex(s: string): string {
+  return s.replace(/\\cdot(?=[a-zA-Z])/g, "\\cdot ");
 }
 
 export function formatScalar(v: any, digits = 4): string {

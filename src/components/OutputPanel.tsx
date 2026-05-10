@@ -10,6 +10,7 @@ const tabs = [
   "Char Poly",
   "U(t)",
   "Numeric",
+  "Steps",
   "Export",
 ] as const;
 type Tab = (typeof tabs)[number];
@@ -72,6 +73,7 @@ export function OutputPanel() {
           {tab === "Char Poly" && <CharPolyTab r={result} />}
           {tab === "U(t)" && <EvolutionTab r={result} />}
           {tab === "Numeric" && <NumericTab r={result} />}
+          {tab === "Steps" && <StepsTab r={result} />}
           {tab === "Export" && <ExportTab r={result} />}
 
           {result.warnings.length > 0 && tab !== "Export" && (
@@ -354,6 +356,58 @@ function NumericTab({ r }: { r: SolveResult }) {
           ))}
         </div>
       </Section>
+    </div>
+  );
+}
+
+function StepsTab({ r }: { r: SolveResult }) {
+  if (!r.steps || r.steps.length === 0) {
+    return (
+      <Section label="Step-by-step">
+        <div className="text-sm text-slate-500">
+          No worked steps available. Press Solve again after entering a matrix.
+        </div>
+      </Section>
+    );
+  }
+  return (
+    <div className="space-y-3">
+      <div className="rounded-md border border-brand-500/20 bg-brand-500/5 p-3 text-xs text-slate-300">
+        Worked-example mode — each quantity below is derived the way a teacher
+        would on the board. Symbolic algebra first, with a substitution step at
+        the end when you've bound the free symbols to numbers.
+      </div>
+      {r.matrixLatex && (
+        <Section label="Starting point" definition={<DefTex>{"H"}</DefTex>}>
+          <Tex display>{r.matrixLatex}</Tex>
+        </Section>
+      )}
+      {r.steps.map((sec, i) => (
+        <Section key={i} label={`${i + 1}. ${sec.title}`}>
+          <ol className="space-y-3 list-none counter-reset-step">
+            {sec.steps.map((st, k) => (
+              <li
+                key={k}
+                className="rounded-md border border-white/5 bg-ink-850/40 p-3"
+              >
+                <div className="flex items-baseline gap-2 mb-1.5">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-brand-400/80 shrink-0">
+                    Step {k + 1}
+                  </span>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    {st.say}
+                  </p>
+                </div>
+                {st.tex && (
+                  <div className="mt-2 overflow-x-auto">
+                    <Tex display>{st.tex}</Tex>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        </Section>
+      ))}
     </div>
   );
 }

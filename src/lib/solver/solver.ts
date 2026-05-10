@@ -28,6 +28,7 @@ import {
   formatScalar,
   vectorToLatex,
 } from "../latex/render";
+import { buildSteps, type StepSection } from "./steps";
 
 export type CellNodes = (MathNode | null)[][];
 
@@ -64,6 +65,7 @@ export type SolveResult = {
     matrix: (number | Complex)[][];
     eigenvalues: (number | Complex)[];
   };
+  steps?: StepSection[];
   warnings: string[];
   error?: string;
 };
@@ -387,8 +389,12 @@ export function solve(input: SolveInput): SolveResult {
     | { latex: string; numeric?: number | Complex; multiplicity: number }[]
     | undefined;
   let evecsLatex: { eigenvalueLatex: string; vectorLatex: string }[] | undefined;
+  // Keep the symbolic 2×2 forms aside so the Steps tab can show them even when
+  // numeric values later overwrite the user-facing eigenvalues field.
+  let eig2SymbolicLatex: string[] | undefined;
   if (rows === 2) {
     const { latex, evectorsLatex } = eig2x2Symbolic(nodes);
+    eig2SymbolicLatex = latex;
     eigLatex = latex.map((l) => ({ latex: l, multiplicity: 1 }));
     evecsLatex = latex.map((_, k) => ({
       eigenvalueLatex: `\\lambda_{${k === 0 ? "+" : "-"}}`,
@@ -481,6 +487,20 @@ export function solve(input: SolveInput): SolveResult {
     warnings.push("Time evolution requires numeric values for all symbols.");
   }
 
+  const steps = buildSteps({
+    rows,
+    nodes,
+    numericSubs,
+    traceLatex: trLatex,
+    detLatex,
+    charPolyLatex: charPoly,
+    eigenvaluesSymbolicLatex: eig2SymbolicLatex,
+    eigenvaluesNumeric: numericData?.eigenvalues,
+    eigenvectors: evecsLatex,
+    evolutionLatex,
+    symbolic,
+  });
+
   return {
     ok: true,
     symbolic,
@@ -497,6 +517,7 @@ export function solve(input: SolveInput): SolveResult {
     eigenvectors: evecsLatex,
     evolutionLatex,
     numeric: numericData,
+    steps,
     warnings,
   };
 }
