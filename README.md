@@ -133,7 +133,13 @@ Computed numerically by matrix exponentiation once all symbols are bound. Defaul
 
 ![U(t) tab](docs/images/output-evolution.png)
 
-### 6. Export
+### 6. Worked-example "Steps" mode
+
+Every quantity above has a teacher-style derivation in the **Steps** tab — symbolic algebra first, with a substitution step at the end when free symbols are bound. Full algebra is shown for $n \le 3$ (cofactor expansion, quadratic-formula derivation, eigenvector null-space); for $n \ge 4$ the tab summarizes the Faddeev–LeVerrier recursion that the solver actually runs.
+
+![Steps tab](docs/images/output-steps.png)
+
+### 7. Export
 
 Copy or download the entire calculation as **LaTeX**, **Markdown**, **JSON**, or a standalone **Python (SymPy)** script that reproduces it byte-for-byte.
 
@@ -322,8 +328,13 @@ Closed-form roots only exist up to $n = 4$ (Cardano / Ferrari) and are unwieldy 
 **Why doesn't iOS auto-zoom my matrix when I tap a cell?**
 We force a 16 px input font on mobile, the iOS threshold for disabling auto-zoom. Desktop layouts revert to denser font sizes.
 
-**The screenshots above are missing — what's going on?**
-The repo ships a [`docs/images/`](docs/images/) directory with the expected filenames. Drop in your own screenshots (or wait for the maintainer to add them) and the README renders correctly.
+**How are the README screenshots produced?**
+By [`scripts/screenshots.mjs`](scripts/screenshots.mjs), a Playwright script that drives the live web app at desktop and mobile viewports, walks every output tab, and writes the captures to [`docs/images/`](docs/images/). To re-generate after a UI change:
+
+```bash
+npm run build && npx vite preview --port 4173 &
+npm run screenshots
+```
 
 ## 📜 License
 
