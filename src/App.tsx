@@ -69,7 +69,14 @@ function Header({
   cols: number;
 }) {
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-3 border-b border-white/5 bg-ink-950/40 backdrop-blur-xl">
+    <header
+      className="sticky top-0 z-30 flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-3 border-b border-white/5 bg-ink-950/40 backdrop-blur-xl"
+      style={{
+        paddingTop: "calc(0.5rem + env(safe-area-inset-top))",
+        paddingLeft: "max(0.75rem, env(safe-area-inset-left))",
+        paddingRight: "max(0.75rem, env(safe-area-inset-right))",
+      }}
+    >
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="" className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0" />
         <div className="min-w-0">

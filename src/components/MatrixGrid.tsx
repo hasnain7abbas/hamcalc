@@ -122,7 +122,10 @@ function Cell({
         onKeyDown={onKey}
         spellCheck={false}
         autoComplete="off"
-        inputMode="text"
+        // Suppress the OS soft keyboard on mobile — the on-screen physics
+        // keyboard below is the intended input method. Hardware keyboards on
+        // desktop still work because inputMode only affects the IME.
+        inputMode="none"
         autoCapitalize="off"
         autoCorrect="off"
         className={[
