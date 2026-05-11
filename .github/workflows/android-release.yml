@@ -1,8 +1,10 @@
 name: Android Release
 
-# Auto-bumps the patch version on every push to main, builds the Android APK +
-# AAB via Tauri 2's Android target, and publishes them to a v<X.Y.Z> GitHub
-# release.
+# Auto-bumps the patch version on every push to main, builds a debug-signed
+# Android APK via Tauri 2's Android target, and publishes it to a v<X.Y.Z>
+# GitHub release. The debug signature makes the APK installable via sideload;
+# real release signing kicks in automatically when the ANDROID_* secrets below
+# are set.
 #
 # Adapted from Razee4315/Tauri_Android_Template — the differences are: this
 # workflow runs `cargo tauri android init` inside CI rather than expecting a
@@ -170,16 +172,27 @@ jobs:
         # project from tauri.conf.json on every CI run.
         run: cargo tauri android init
 
-      - name: Build Android APK + AAB (aarch64)
-        run: cargo tauri android build --target aarch64
+      - name: Use HamCalc launcher icons
+        # `tauri android init` drops Tauri's default circular launcher icons
+        # into the generated res/mipmap-* folders. Overlay the H-logo icon set
+        # we keep checked-in under src-tauri/icons/android/ so the installed
+        # app shows the HamCalc launcher icon, not the Tauri default.
+        run: |
+          cp -rv src-tauri/icons/android/. src-tauri/gen/android/app/src/main/res/
+
+      - name: Build Android APK (debug-signed, installable)
+        # `--debug` makes Gradle sign with the Android debug keystore. Without
+        # `--debug` Gradle produces app-universal-release-unsigned.apk, which
+        # Android rejects with "package appears to be invalid". Real release
+        # signing is wired up via the ANDROID_* secrets above.
+        run: cargo tauri android build --debug --target aarch64
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: android-release-${{ needs.check-and-bump.outputs.version }}
+          name: android-debug-${{ needs.check-and-bump.outputs.version }}
           path: |
             src-tauri/gen/android/app/build/outputs/**/*.apk
-            src-tauri/gen/android/app/build/outputs/**/*.aab
             src-tauri/gen/android/app/build/outputs/**/output-metadata.json
           if-no-files-found: error
 
@@ -189,8 +202,12 @@ jobs:
         run: |
           VERSION=${{ needs.check-and-bump.outputs.version }}
 
-          APK=$(find src-tauri/gen/android -name "*.apk" -type f | head -1)
-          AAB=$(find src-tauri/gen/android -name "*.aab" -type f | head -1)
+          # Prefer the debug-signed APK (what we just built). Fall back to any
+          # APK if the file-name pattern changes in a future Tauri release.
+          APK=$(find src-tauri/gen/android -name "*-debug.apk" -type f | head -1)
+          if [ -z "$APK" ]; then
+            APK=$(find src-tauri/gen/android -name "*.apk" -type f ! -name "*unsigned*" | head -1)
+          fi
 
           if ! gh release view "v$VERSION" >/dev/null 2>&1; then
             echo "Creating release v$VERSION"
@@ -203,9 +220,7 @@ jobs:
           if [ -n "$APK" ]; then
             cp "$APK" "HamCalc_${VERSION}.apk"
             gh release upload "v$VERSION" "HamCalc_${VERSION}.apk" --clobber
-          fi
-
-          if [ -n "$AAB" ]; then
-            cp "$AAB" "HamCalc_${VERSION}.aab"
-            gh release upload "v$VERSION" "HamCalc_${VERSION}.aab" --clobber
+          else
+            echo "No installable APK found under src-tauri/gen/android" >&2
+            exit 1
           fi
